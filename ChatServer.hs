@@ -17,10 +17,15 @@ import Data.List.Split
 import qualified Data.Map as M hiding (split)
 import Prelude hiding (null, lookup)
 import Control.Applicative ((<$>), (<*>))
-
-import Client
-import Types
-
+import qualified Data.Set as S
+import qualified Data.Map as M
+{-
+    Types
+-}
+type ClientName = String
+type ChatroomName = String
+type ChatroomRef = Integer
+type ClientJoinID = Integer
 {-
     ChatServer
 -}
@@ -97,7 +102,26 @@ chatroomRemoveClient room joinID = modifyTVar (chatroomClients room) $ M.delete 
 chatroomGetRef :: Chatroom -> ChatroomRef
 chatroomGetRef Chatroom{..} = chatroomRef
 
+data Client = Client
+    { clientName          :: TVar ClientName
+    , clientJoinID        :: ClientJoinID
+    , clientSocket        :: Socket
+    , clientRoomRefs      :: TVar (S.Set ChatroomRef)
+    }
 
+newClient :: ClientJoinID -> Socket -> STM Client
+newClient joinID socket = do
+    clientName <- newTVar "default"
+    roomRefs <- newTVar S.empty
+    return Client
+        { clientName          = clientName
+        , clientJoinID        = joinID
+        , clientSocket        = socket
+        , clientRoomRefs      = roomRefs
+        }
+
+clientChangeName :: Client -> ClientName -> STM ()
+clientChangeName client@Client{..} name = writeTVar clientName name
 
 clientHandler :: Socket -> ChatServer -> IO ()
 clientHandler sock server@ChatServer{..} =
