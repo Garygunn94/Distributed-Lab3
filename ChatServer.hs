@@ -123,8 +123,8 @@ newClient joinID socket = do
 clientChangeName :: Client -> ClientName -> STM ()
 clientChangeName client@Client{..} name = writeTVar clientName name
 
-clientHandler :: Socket -> ChatServer -> IO ()
-clientHandler sock server@ChatServer{..} =
+clientHandler :: Socket -> Chan String -> ChatServer -> IO ()
+clientHandler sock chan server@ChatServer{..} =
     forever $ do
         message <- recv sock 1024
 	let msg = unpack message
@@ -138,7 +138,7 @@ clientHandler sock server@ChatServer{..} =
             ("LEAVE_CHATROOM") -> leaveCommand sock server msg
             ("DISCONNECT") -> terminateCommand sock server msg
             ("HELO") -> heloCommand sock server $ (words msg) !! 1
-            ("KILL_SERVICE") -> killCommand sock
+            ("KILL_SERVICE") -> killCommand chan sock
             _ -> do send sock (pack ("Unknown Command - " ++ msg ++ "\n\n")) ; return ()
 
 joinCommand :: Socket -> ChatServer -> String -> IO ()
@@ -265,10 +265,10 @@ heloCommand sock ChatServer{..} msg = do
   return ()
   --hFlush sock
 
-killCommand :: Socket -> IO ()
-killCommand sock = do
+killCommand :: Chan String -> Socket -> IO ()
+killCommand chan sock = do
     send sock $ pack $ "Service is now terminating!"
-    exitSuccess
+    writeChan chan "KILL_SERVICE"
 
 incrementClientJoinCount :: TVar ClientJoinID -> STM ()
 incrementClientJoinCount tv = modifyTVar tv ((+) 1)
