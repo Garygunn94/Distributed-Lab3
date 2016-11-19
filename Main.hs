@@ -56,7 +56,7 @@ serverport :: String
 serverport = "7007"
 
 serverhost :: String
-serverhost = "10.62.0.217"
+serverhost = "192.168.1.112"
 
 incrementTVar :: TVar Int -> STM ()
 incrementTVar tv = modifyTVar tv ((+) 1)
