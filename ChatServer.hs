@@ -258,7 +258,7 @@ Server closes connection
 heloCommand :: Socket -> ChatServer -> String -> IO ()
 heloCommand sock ChatServer{..} msg = do
   send sock $ pack $ "HELO " ++ msg ++ "\n" ++
-                     "IP:" ++ "192.168.1.112" ++ "\n" ++
+                     "IP:" ++ "192.168.6.129" ++ "\n" ++
                      "Port:" ++ port ++ "\n" ++
                      "StudentID:12306421\n\n"
 
