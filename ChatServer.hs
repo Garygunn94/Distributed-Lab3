@@ -131,7 +131,6 @@ clientHandler sock chan server@ChatServer{..} =
         print $ msg ++ "!ENDLINE!"
         let cmd = head $ words $ head $ splitOn ":" msg
         print cmd
-
         case cmd of
             ("JOIN_CHATROOM") -> joinCommand sock server msg
             ("CHAT") -> messageCommand sock server msg
@@ -143,14 +142,10 @@ clientHandler sock chan server@ChatServer{..} =
 
 joinCommand :: Socket -> ChatServer -> String -> IO ()
 joinCommand sock server@ChatServer{..} command = do
-    --putStrLn $ "Joincommand - " ++ command
 
     let clines = splitOn "\\n" command
         chatroomName = (splitOn ":" $ clines !! 0) !! 1
         clientName = (splitOn ":" $ clines !! 3) !! 1
-    {-putStrLn $ show chatroomName
-    putStrLn $ show clientName
-    putStrLn $ chatroomName ++ " " ++ clientName-}
 
     joinID <- atomically $ readTVar clientJoinCount
 
@@ -169,12 +164,6 @@ joinCommand sock server@ChatServer{..} command = do
          "JOIN_ID:" ++ show joinID ++ "\n\n"
 
     return ()
-    --hFlush sock
-{-
-Error Response:
-ERROR_CODE: [integer]
-ERROR_DESCRIPTION: [string describing error]
--}
 
 messageCommand :: Socket -> ChatServer -> String -> IO ()
 messageCommand sock server@ChatServer{..} command = do
@@ -184,11 +173,6 @@ messageCommand sock server@ChatServer{..} command = do
         clientName = (splitOn ":" $ clines !! 2) !! 1
         message = (splitOn ":" $ clines !! 3) !! 1
 
-    {-putStrLn $ show chatroomRef
-    putStrLn $ show joinID
-    putStrLn $ show clientName
-    putStrLn $ show message-}
-
     room <- atomically $ lookupChatroomByRef server $ read chatroomRef
 
     case room of
@@ -197,7 +181,6 @@ messageCommand sock server@ChatServer{..} command = do
             clients <- atomically $ readTVar $ chatroomClients room
             let sockList = map snd $ M.toList clients
             let msg = "CHAT:" ++ chatroomRef ++ "\n" ++ "CLIENT_NAME:" ++ clientName ++ "\n" ++ "MESSAGE:" ++ show message ++ "\n\n"
-            --mapM_ (\h -> hPutStrLn h msg >> hFlush h) handleList
             mapM_ (\s -> sendAll s (pack msg)) sockList
             return ()
 
@@ -219,22 +202,10 @@ leaveCommand sock server@ChatServer{..} command = do
                 "JOIN_ID:" ++ show joinID ++ "\n\n"
 
             return ()
-                    
-            --hFlush sock
+            
         Nothing  -> do
             send sock (pack "Chatroom you have tried to leave does not exist.")
             return ()
-            --hFlush sock
-{-
-Client Sends:
-LEAVE_CHATROOM: [ROOM_REF]
-JOIN_ID: [integer previously provided by server on join]
-CLIENT_NAME: [string sock to identifier client user]
-
-Server Response:
-LEFT_CHATROOM: [ROOM_REF]
-JOIN_ID: [integer previously provided by server on join]
--}
 
 terminateCommand :: Socket -> ChatServer -> String -> IO ()
 terminateCommand sock server@ChatServer{..} command = do
@@ -243,17 +214,8 @@ terminateCommand sock server@ChatServer{..} command = do
         port = (splitOn ":" $ clines !! 1) !! 1
         clientName = (splitOn ":" $ clines !! 2) !! 1
 
-    --atomically $ removeClientFromServer (read joinID)
     print $ "Client " ++ clientName ++ " removed!"
     sClose sock
-{-
-Client Sends:
-DISCONNECT: [IP address of client if UDP | 0 if TCP]
-PORT: [port number of client it UDP | 0 id TCP]
-CLIENT_NAME: [string sock to identify client user]
-
-Server closes connection
--}
 
 heloCommand :: Socket -> ChatServer -> String -> IO ()
 heloCommand sock ChatServer{..} msg = do
@@ -263,7 +225,6 @@ heloCommand sock ChatServer{..} msg = do
                      "StudentID:12306421\n\n"
 
   return ()
-  --hFlush sock
 
 killCommand :: Chan String -> Socket -> IO ()
 killCommand chan sock = do

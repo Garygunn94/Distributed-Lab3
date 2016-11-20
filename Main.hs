@@ -4,6 +4,7 @@ import Network hiding (accept, sClose)
 import Network.Socket
 import System.Environment
 import System.IO
+import Data.ByteString.Char8 (pack, unpack)
 import Control.Concurrent {- hiding (forkFinally) instead using myFOrkFinally to avoid GHC version issues-}
 import Control.Concurrent.STM
 import Control.Exception
@@ -77,19 +78,8 @@ clientconnectHandler sock chan threadCount server = do
 
   clientconnectHandler sock chan threadCount server
 
-    --forever $ do
-    --    count <- atomically $ readTVar threadCount
-     --   putStrLn $ "threadCount = " ++ show count
-    --
-    --    (clientSock, connAddr) <- accept sock
-    --    _ <- printf "Accepted connection from %s\n" (show connAddr)
 
---        if (count < maxThreadCount) then do
-  --          forkFinally (clientHandler clientSock server) (\_ -> atomically $ decrementTVar threadCount)
-    --        atomically $ incrementTVar threadCount
-      --      else do
-        --        send clientSock "Service reached maximum capacity, please try again later!"
-          --      sClose clientSock
+
 
 serverport :: String
 serverport = "7007"
