@@ -102,6 +102,9 @@ chatroomRemoveClient room joinID = modifyTVar (chatroomClients room) $ M.delete 
 chatroomGetRef :: Chatroom -> ChatroomRef
 chatroomGetRef Chatroom{..} = chatroomRef
 
+ipAddress :: String
+ipAddress = "10.62.0.217"
+
 data Client = Client
     { clientName          :: TVar ClientName
     , clientJoinID        :: ClientJoinID
@@ -156,12 +159,11 @@ joinCommand sock server@ChatServer{..} command = do
     room <- atomically $ lookupOrCreateChatroom server chatroomName
     atomically $ chatroomAddClient room joinID sock
 
-    sendAll sock $ pack $
-         "JOINED_CHATROOM:" ++ chatroomName ++ "\n" ++ 
-         "SERVER_IP:" ++ "10.62.0.217" ++ "\n" ++
-         "PORT:" ++ port ++ "\n" ++
-         "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
-         "JOIN_ID:" ++ show joinID ++ "\n\n"
+    send sock $ pack $ "JOINED_CHATROOM: " ++ chatroomName ++
+                       "\nSERVER_IP: " ++ ipAddress ++ 
+                       "\nPORT: " ++ port ++ 
+                       "\nROOM_REF: " ++ show (chatroomGetRef room) ++ 
+                       "\nJOIN_ID: " ++ show joinID ++ "\n\n"
 
     return ()
 
@@ -219,10 +221,11 @@ terminateCommand sock server@ChatServer{..} command = do
 
 heloCommand :: Socket -> ChatServer -> String -> IO ()
 heloCommand sock ChatServer{..} msg = do
-  send sock $ pack $ "HELO " ++ msg ++ "\n" ++
-                     "IP:" ++ "10.62.0.217" ++ "\n" ++
-                     "Port:" ++ port ++ "\n" ++
-                     "StudentID:12306421\n\n"
+ 
+  send sock $ pack $  "HELO " ++ msg ++ "\n" ++
+                      "IP:" ++ ipAddress ++ "\n" ++
+                      "Port:" ++ port ++ "\n" ++
+                      "StudentID:12306421\n\n"
 
   return ()
 
