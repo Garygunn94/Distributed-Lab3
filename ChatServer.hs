@@ -159,8 +159,8 @@ joinCommand sock server@ChatServer{..} command = do
     room <- atomically $ lookupOrCreateChatroom server chatroomName
     atomically $ chatroomAddClient room joinID sock
 
-    send sock $ pack $ "JOINED_CHATROOM:" ++ chatroomName ++ "\n\\" ++
-                       "SERVER_IP:" ++ ipAddress ++ "\n\\" ++
+    send sock $ pack $ "JOINED_CHATROOM:" ++ chatroomName ++ "\n\n" ++
+                       "SERVER_IP:" ++ ipAddress ++ "\n\n" ++
                        "PORT:" ++ port ++ "\n\\" ++
                        "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n\\" ++
                        "JOIN_ID:" ++ show joinID ++ "\n\n"
