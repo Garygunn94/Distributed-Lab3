@@ -143,7 +143,7 @@ clientHandler handle chan server@ChatServer{..} = do
 
 joinCommand :: Handle -> ChatServer -> String -> IO ()
 joinCommand handle server@ChatServer{..} command = do
-
+    hSetBuffering handle (BlockBuffering Nothing)
     let clines = splitOn "\\n" command
         chatroomName = (splitOn ":" $ clines !! 0) !! 1
         clientName = (splitOn ":" $ clines !! 3) !! 1
@@ -167,7 +167,6 @@ joinCommand handle server@ChatServer{..} command = do
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
-    mapM_ (\s -> hSetBuffering s (BlockBuffering Nothing)) sockList
     mapM_ (\s -> hPutStrLn s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
                                "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
                                "MESSAGE:" ++ "joined!") sockList   
