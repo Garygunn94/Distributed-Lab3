@@ -164,6 +164,8 @@ joinCommand handle server@ChatServer{..} command = do
                        "JOIN_ID:" ++ show joinID ++ "\n\n"
 
     hFlush handle
+    print $ "here"
+    return()
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
 messageCommand handle server@ChatServer{..} command = do
