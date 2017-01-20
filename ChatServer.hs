@@ -172,6 +172,7 @@ joinCommand handle server@ChatServer{..} command = do
 
 sendcrmsg :: String -> Handle -> IO()
 sendcrmsg msg handle = do
+    hSetBuffering handle (BlockBuffering Nothing)
     hPutStrLn handle $ msg
     hFlush handle
 
