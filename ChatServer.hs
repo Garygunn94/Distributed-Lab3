@@ -168,7 +168,7 @@ joinCommand handle server@ChatServer{..} command = do
     let sockList = map snd $ M.toList clients
     let msg = "CHAT:" ++ chatroomName ++ "\n" ++ "CLIENT_NAME:" ++ clientName ++ "\n" ++ "MESSAGE:" ++ "joined!" ++ "\n\n"
     mapM_ (\s -> hPutStrLn s $ msg) sockList   
-    mapM_ (\s -< hFlush s) sockList
+    mapM_ (\s -> hFlush s) sockList
     return()
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
