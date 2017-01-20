@@ -170,7 +170,6 @@ joinCommand handle server@ChatServer{..} command = do
     mapM_ (\s -> hPutStrLn s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
                                "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
                                "MESSAGE:" ++ "joined!") sockList   
-    mapM_ (\s -> hFlush s) sockList
     return()
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
