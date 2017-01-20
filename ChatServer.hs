@@ -180,6 +180,7 @@ messageCommand handle server@ChatServer{..} command = do
         Just room -> do
             clients <- atomically $ readTVar $ chatroomClients room
             let sockList = map snd $ M.toList clients
+            print sockList
             let msg = "CHAT:" ++ chatroomRef ++ "\n" ++ "CLIENT_NAME:" ++ clientName ++ "\n" ++ "MESSAGE:" ++ show message ++ "\n\n"
             mapM_ (\s -> hPutStrLn handle msg) sockList
             return ()
