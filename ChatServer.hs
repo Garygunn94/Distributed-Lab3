@@ -165,11 +165,11 @@ joinCommand handle server@ChatServer{..} command = do
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
-    mapM_ (\s -> hPutStrLn s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
+    mapM_ (\s -> hPutStr s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
                                "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
                                "MESSAGE:" ++ "joined!") sockList   
     hFlush handle
-    
+
 messageCommand :: Handle -> ChatServer -> String -> IO ()
 messageCommand handle server@ChatServer{..} command = do
     let clines = splitOn "\\n" command
