@@ -176,14 +176,15 @@ messageCommand handle server@ChatServer{..} command = do
     print(chatroomRef)
     room <- atomically $ lookupChatroomByRef server $ read chatroomRef
     case room of
-        Nothing -> hPutStrLn handle ("The room you have messaged does not exist!") >> return ()
+        Nothing -> do hPutStrLn handle ("The room you have messaged does not exist!")
+                      hFlush handle
         Just room -> do
             clients <- atomically $ readTVar $ chatroomClients room
             let sockList = map snd $ M.toList clients
             print sockList
             let msg = "CHAT:" ++ chatroomRef ++ "\n" ++ "CLIENT_NAME:" ++ clientName ++ "\n" ++ "MESSAGE:" ++ show message ++ "\n\n"
             mapM_ (\s -> hPutStrLn handle msg) sockList
-            return ()
+            hFlush handle
 
 leaveCommand :: Handle -> ChatServer -> String -> IO ()
 leaveCommand handle server@ChatServer{..} command = do
@@ -206,7 +207,7 @@ leaveCommand handle server@ChatServer{..} command = do
             
         Nothing  -> do
             hPutStrLn handle $ "Chatroom you have tried to leave does not exist."
-            return ()
+            hFlush handle
 
 terminateCommand :: Handle -> ChatServer -> String -> IO ()
 terminateCommand handle server@ChatServer{..} command = do
