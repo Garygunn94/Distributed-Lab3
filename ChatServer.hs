@@ -163,7 +163,7 @@ joinCommand handle server@ChatServer{..} command = do
                        "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
                        "JOIN_ID:" ++ show joinID
 
-    
+    hFlush handle
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
