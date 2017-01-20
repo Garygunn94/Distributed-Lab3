@@ -62,19 +62,20 @@ clientconnectHandler sock chan threadCount server = do
 
   --Accept the socket which returns a handle, host and port
   --(handle, host, port) <- accept sock
-  (clsock,claddr) <- accept sock
-  _ <- printf "Accepted connection from %s\n" (show claddr)
+  (s,a) <- accept sock
+  handle <- socketToHandle s ReadWriteMode
+  _ <- printf "Accepted connection from %s\n" (show a)
   --Read numThreads from memory and print it on server console
   count <- atomically $ readTVar threadCount
   putStrLn $ "threadCount = " ++ show count
 
   --If there are still threads remaining create new thread and increment (exception if thread is lost -> decrement), else tell user capacity has been reached
   if (count < maxThreadCount) then do
-    forkFinally (clientHandler clsock chan server) (\_ -> atomically $ decrementTVar threadCount)
+    forkFinally (clientHandler handle chan server) (\_ -> atomically $ decrementTVar threadCount)
     atomically $ incrementTVar threadCount
     else do
-      send clsock "Maximum number of threads in use. try again soon"
-      sClose clsock
+      hPutStrLn handle "Maximum number of threads in use. try again soon"
+      hClose handle
 
   clientconnectHandler sock chan threadCount server
 
