@@ -170,7 +170,7 @@ joinCommand handle server@ChatServer{..} command = do
     let msg = "CHAT:" ++ (show roomref) ++ "\n" ++ 
               "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
               "MESSAGE:" ++ "joined!"
-    mapM_ (\s -> hSetBuffering s (BlockBuffering Nothing))
+    mapM_ (\s -> hSetBuffering s (BlockBuffering Nothing)) sockList
     mapM_ (\s -> hPutStrLn s $ msg) sockList   
     mapM_ (\s -> hFlush s) sockList
     return()
