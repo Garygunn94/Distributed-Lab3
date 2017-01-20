@@ -174,7 +174,7 @@ messageCommand handle server@ChatServer{..} command = do
         message = (splitOn ":" $ clines !! 3) !! 1
 
     room <- atomically $ lookupChatroomByRef server $ read chatroomRef
-
+    print(show room)
     case room of
         Nothing -> hPutStrLn handle ("The room you have messaged does not exist!") >> return ()
         Just room -> do
