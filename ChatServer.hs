@@ -149,7 +149,7 @@ joinCommand handle server@ChatServer{..} command = do
         clientName = (splitOn ":" $ clines !! 3) !! 1
 
     joinID <- atomically $ readTVar clientJoinCount
-
+    print $ handle
     c <- atomically $ newClient joinID handle
     atomically $ addClientToServer server joinID c
     atomically $ incrementClientJoinCount clientJoinCount
