@@ -164,7 +164,6 @@ joinCommand handle server@ChatServer{..} command = do
                        "JOIN_ID:" ++ show joinID
 
     hFlush handle
-    return()
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
 messageCommand handle server@ChatServer{..} command = do
@@ -221,7 +220,7 @@ terminateCommand handle server@ChatServer{..} command = do
 
 heloCommand :: Handle -> ChatServer -> String -> IO ()
 heloCommand handle ChatServer{..} msg = do
- 
+  hSetBuffering handle (BlockBuffering Nothing)
   hPutStrLn handle $  "HELO " ++ msg ++ "\n" ++
                       "IP:" ++ ipAddress ++ "\n" ++
                       "Port:" ++ port ++ "\n" ++
