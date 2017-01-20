@@ -161,10 +161,9 @@ joinCommand handle server@ChatServer{..} command = do
                        "SERVER_IP:" ++ ipAddress ++ "\n" ++
                        "PORT:" ++ port ++ "\n" ++
                        "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
-                       "JOIN_ID:" ++ show joinID ++ "\n\n"
+                       "JOIN_ID:" ++ show joinID
 
     hFlush handle
-    print $ "here"
     return()
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
