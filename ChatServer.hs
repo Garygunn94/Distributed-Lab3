@@ -129,6 +129,7 @@ clientChangeName client@Client{..} name = writeTVar clientName name
 clientHandler :: Handle -> Chan String -> ChatServer -> IO ()
 clientHandler handle chan server@ChatServer{..} = do
         msg <- hGetLine handle
+        hSetBuffering handle (BlockBuffering Nothing)
         print $ msg ++ "!ENDLINE!"
         let cmd = head $ words $ head $ splitOn ":" msg
         print cmd
@@ -165,7 +166,7 @@ joinCommand handle server@ChatServer{..} command = do
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
-    hSetBuffering handle (BlockBuffering Nothing)
+    
     mapM_ (\s -> hPutStrLn s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
                                "CLIENT_NAME:" ++ clientNamer ++ "\n" ++ 
                                "MESSAGE:" ++ "joined!") sockList   
