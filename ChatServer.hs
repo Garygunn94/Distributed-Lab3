@@ -158,7 +158,7 @@ joinCommand sock server@ChatServer{..} command = do
 
     sendAll sock $ pack $
          "JOINED_CHATROOM:" ++ chatroomName ++ "\n" ++ 
-         "SERVER_IP:" ++ address ++ "\n" ++
+         "SERVER_IP:" ++ "10.62.0.217" ++ "\n" ++
          "PORT:" ++ port ++ "\n" ++
          "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
          "JOIN_ID:" ++ show joinID ++ "\n\n"
@@ -220,7 +220,7 @@ terminateCommand sock server@ChatServer{..} command = do
 heloCommand :: Socket -> ChatServer -> String -> IO ()
 heloCommand sock ChatServer{..} msg = do
   send sock $ pack $ "HELO " ++ msg ++ "\n" ++
-                     "IP:" ++ "192.168.6.129" ++ "\n" ++
+                     "IP:" ++ "10.62.0.217" ++ "\n" ++
                      "Port:" ++ port ++ "\n" ++
                      "StudentID:12306421\n\n"
 
