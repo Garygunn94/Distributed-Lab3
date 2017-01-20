@@ -167,7 +167,10 @@ joinCommand handle server@ChatServer{..} command = do
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
-    let msg = "CHAT:" ++ (show roomref) ++ "\n" ++ "CLIENT_NAME:" ++ clientName ++ "\n" ++ "MESSAGE:" ++ "joined!" ++ "\n\n"
+    let msg = "CHAT:" ++ (show roomref) ++ "\n" ++ 
+              "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
+              "MESSAGE:" ++ "joined!"
+    mapM_ (\s -> hSetBuffering s (BlockBuffering Nothing))
     mapM_ (\s -> hPutStrLn s $ msg) sockList   
     mapM_ (\s -> hFlush s) sockList
     return()
