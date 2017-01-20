@@ -163,7 +163,7 @@ joinCommand handle server@ChatServer{..} command = do
                        "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
                        "JOIN_ID:" ++ show joinID ++ "\n\n"
 
-    return ()
+    hFlush handle
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
 messageCommand handle server@ChatServer{..} command = do
@@ -226,7 +226,7 @@ heloCommand handle ChatServer{..} msg = do
                       "Port:" ++ port ++ "\n" ++
                       "StudentID:12306421\n\n"
 
-  return ()
+  hFlush handle
 
 killCommand :: Chan String -> Handle -> IO ()
 killCommand chan handle = do
