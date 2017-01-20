@@ -157,10 +157,11 @@ joinCommand handle server@ChatServer{..} command = do
     room <- atomically $ lookupOrCreateChatroom server chatroomName
     atomically $ chatroomAddClient room joinID handle
 
-    hPutStrLn handle $ "JOINED_CHATROOM:" ++ chatroomName ++ "\n\n" ++
-                       "SERVER_IP:" ++ ipAddress ++ "\n\n" ++
-                       "PORT:" ++ port ++ "\n\\" ++
-                       "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n\\" ++
+    hSetBuffering handle (BlockBuffering Nothing)
+    hPutStrLn handle $ "JOINED_CHATROOM:" ++ chatroomName ++ "\n" ++
+                       "SERVER_IP:" ++ ipAddress ++ "\n" ++
+                       "PORT:" ++ port ++ "\n" ++
+                       "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
                        "JOIN_ID:" ++ show joinID ++ "\n\n"
 
     return ()
