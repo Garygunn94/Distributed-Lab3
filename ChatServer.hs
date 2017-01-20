@@ -145,10 +145,9 @@ joinCommand :: Handle -> ChatServer -> String -> IO ()
 joinCommand handle server@ChatServer{..} command = do
     let clines = splitOn "\\n" command
         chatroomName = (splitOn ":" $ clines !! 0) !! 1
-        clientName = (splitOn ":" $ clines !! 3) !! 1
+        clientNamer = (splitOn ":" $ clines !! 3) !! 1
 
     joinID <- atomically $ readTVar clientJoinCount
-    print $ handle
     c <- atomically $ newClient joinID handle
     atomically $ addClientToServer server joinID c
     atomically $ incrementClientJoinCount clientJoinCount
@@ -162,13 +161,15 @@ joinCommand handle server@ChatServer{..} command = do
                        "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
                        "JOIN_ID:" ++ show joinID
 
+    hFlush handle
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
+    hSetBuffering handle (BlockBuffering Nothing)
     mapM_ (\s -> hPutStrLn s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
-                               "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
+                               "CLIENT_NAME:" ++ clientNamer ++ "\n" ++ 
                                "MESSAGE:" ++ "joined!") sockList   
-    return ()
+    hFlush handle
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
 messageCommand handle server@ChatServer{..} command = do
