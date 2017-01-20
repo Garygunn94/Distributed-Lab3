@@ -161,15 +161,14 @@ joinCommand handle server@ChatServer{..} command = do
                        "PORT:" ++ port ++ "\n" ++
                        "ROOM_REF:" ++ show (chatroomGetRef room) ++ "\n" ++
                        "JOIN_ID:" ++ show joinID
-    hFlush handle
 
     clients <- atomically $ readTVar $ chatroomClients room
     let sockList = map snd $ M.toList clients
     let roomref = chatroomGetRef room
-    mapM_ (\s -> hPutStr s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
-                             "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
-                             "MESSAGE:" ++ "joined!") sockList   
-    hFlush handle
+    mapM_ (\s -> hPutStrLn s $ "CHAT:" ++ (show roomref) ++ "\n" ++ 
+                               "CLIENT_NAME:" ++ clientName ++ "\n" ++ 
+                               "MESSAGE:" ++ "joined!") sockList   
+    return ()
 
 messageCommand :: Handle -> ChatServer -> String -> IO ()
 messageCommand handle server@ChatServer{..} command = do
