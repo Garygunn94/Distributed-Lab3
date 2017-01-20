@@ -173,8 +173,8 @@ messageCommand handle server@ChatServer{..} command = do
         clientName = (splitOn ":" $ clines !! 2) !! 1
         message = (splitOn ":" $ clines !! 3) !! 1
 
+    print(chatroomRef)
     room <- atomically $ lookupChatroomByRef server $ read chatroomRef
-    print(show room)
     case room of
         Nothing -> hPutStrLn handle ("The room you have messaged does not exist!") >> return ()
         Just room -> do
